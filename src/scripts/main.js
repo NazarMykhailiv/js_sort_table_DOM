@@ -6,9 +6,15 @@ document.addEventListener('DOMContentLoaded', () => {
   const headers = table.querySelectorAll('th');
   const tbody = table.querySelector('tbody');
 
+  const sortDirections = {};
+
   headers.forEach((header, colIndex) => {
+    sortDirections[colIndex] = 'asc';
+
     header.addEventListener('click', () => {
       const rowsArray = Array.from(tbody.querySelectorAll('tr'));
+      const direction = sortDirections[colIndex];
+      const multiplier = direction === 'asc' ? 1 : -1;
 
       rowsArray.sort((rowA, rowB) => {
         const cellA = rowA.children[colIndex].textContent.trim();
@@ -18,17 +24,19 @@ document.addEventListener('DOMContentLoaded', () => {
         const b = parseCellValue(cellB);
 
         if (a < b) {
-          return -1;
+          return -1 * multiplier;
         }
 
         if (a > b) {
-          return 1;
+          return 1 * multiplier;
         }
 
         return 0;
       });
 
       rowsArray.forEach((row) => tbody.appendChild(row));
+
+      sortDirections[colIndex] = direction === 'asc' ? 'desc' : 'asc';
     });
   });
 
@@ -37,7 +45,7 @@ document.addEventListener('DOMContentLoaded', () => {
       return parseFloat(val.replace(/[^0-9.-]+/g, ''));
     }
 
-    if (!isNaN(val)) {
+    if (!Number.isNaN(parseFloat(val))) {
       return parseFloat(val);
     }
 
